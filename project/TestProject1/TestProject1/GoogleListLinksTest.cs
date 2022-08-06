@@ -10,7 +10,7 @@ namespace AssessmentQA
     public class GoogleListLinksTest
     {
         private IWebDriver driver;
-        private string path_to_file = "D:\\job\\1\\IsSoft\\assessment\\project\\properties.txt";
+        private string path_to_file = "D:\\job\\1\\IsSoft\\TestAssessment\\project\\TestProject1\\TestProject1\\properties.txt";
 
         [SetUp]
         public void Setup()
@@ -18,6 +18,7 @@ namespace AssessmentQA
             var data = new Dictionary<string, string>();
             foreach (var row in File.ReadAllLines(path_to_file))
             data.Add(row.Split('=')[0], string.Join("=", row.Split('=').Skip(1).ToArray()));
+            TestContext.Out.WriteLine("Start using " + data["brow"]);
 
             if ((data["brow"]).ToString() == "chrome")
             {
@@ -28,21 +29,35 @@ namespace AssessmentQA
             {
                 driver = new OpenQA.Selenium.Firefox.FirefoxDriver();
             }
+            driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://www.google.com/");
             driver.Manage().Window.Maximize();
+            driver.FindElement(By.XPath(".//div[text()='nl']")).Click();
+            driver.FindElement(By.XPath(".//li[contains(text(),'English')]")).Click();
+            driver.FindElement(By.XPath(".//div[text()='Accept all']")).Click();
         }
 
         [Test]
-        public void Test()
+        public void CollectValidSearchLinksTest()
         {
-            //Assert.Pass();
-            IWebElement element = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            search_field.SendKeys("top it companies in netherlands");
+            search_field.SendKeys(Keys.Return);
+
+            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            .Select(x => x.GetAttribute("href"))
+            .ToList();
+
+            for (int i = 0; i < list_links.Count; i++)
+            {
+                TestContext.Out.WriteLine(list_links[i]);
+            }
         }
 
         [TearDown]
         public void TearDown()
         {
-            driver.Close();
+           driver.Close();
         }
 
     }
