@@ -5,10 +5,9 @@ using System.Linq;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
-using System.Drawing.Imaging;
 namespace AssessmentQA
 {
-    public class GoogleListLinksTest
+    public class GoogleTests
     {
         private IWebDriver driver;
         private string path_to_file = "D:\\job\\1\\IsSoft\\TestAssessment\\project\\TestProject1\\TestProject1\\properties.txt";
@@ -97,7 +96,6 @@ namespace AssessmentQA
             }
 
             driver.Close();
-
         }
 
     }
