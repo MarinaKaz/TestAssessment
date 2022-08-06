@@ -54,6 +54,22 @@ namespace AssessmentQA
             }
         }
 
+        [Test]
+        public void CheckInvalidSearchDataTest()
+        {
+            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            search_field.SendKeys("qwertyuiopasdffghjklweterrdfgdfdgfwfefwefwfsdvsv1234t345e");
+            search_field.SendKeys(Keys.Return);
+            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            .Select(x => x.GetAttribute("href"))
+            .ToList();
+            string result = driver.FindElement(By.Id("res")).Text;
+            TestContext.Out.WriteLine(result);
+
+            Assert.IsEmpty(list_links);
+            Assert.IsTrue(result.Contains("did not match any documents"), result + "doesn't contains did not match any documents ");
+        }
+
         [TearDown]
         public void TearDown()
         {
