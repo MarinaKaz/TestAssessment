@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
-
+using System.Drawing.Imaging;
 namespace AssessmentQA
 {
     public class GoogleListLinksTest
@@ -70,10 +71,33 @@ namespace AssessmentQA
             Assert.IsTrue(result.Contains("did not match any documents"), result + "doesn't contains did not match any documents ");
         }
 
+        [Test]
+        public void FailTestForVerifySaveScreenTest()
+        {
+            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            search_field.SendKeys("qwertyuiopasdffghjklweterrdfgdfdgfwfefwefwfsdvsv1234t345e");
+            search_field.SendKeys(Keys.Return);
+            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            .Select(x => x.GetAttribute("href"))
+            .ToList();
+            string result = driver.FindElement(By.Id("res")).Text;
+
+            Assert.IsTrue(result.Contains("haha"), result + "doesn't contains did not match any documents ");
+        }
+
         [TearDown]
         public void TearDown()
         {
-           driver.Close();
+            if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
+            {
+                var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
+                string name = TestContext.CurrentContext.Test.MethodName + ".png";
+                string screenshotFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, name);
+                screenshot.SaveAsFile(screenshotFile, ScreenshotImageFormat.Png);
+            }
+
+            driver.Close();
+
         }
 
     }
