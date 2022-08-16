@@ -14,6 +14,7 @@ namespace AssessmentQA
     {
         private IWebDriver driver;
         private string path_to_file = Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
+        By moreInfoButton = By.XPath("//a[text()='More information...']");
 
         [OneTimeSetUp]
         public void Setup()
@@ -36,7 +37,7 @@ namespace AssessmentQA
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://example.com/");
             driver.Manage().Window.Maximize();
-            driver.FindElement(By.XPath("//a[text()='More information...']")).Click();
+            driver.FindElement(moreInfoButton).Click();
         }
 
         [TestCase("1", TestName = "Table_1RowHighlightedTest")]
@@ -79,14 +80,6 @@ namespace AssessmentQA
         [OneTimeTearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
-            {
-                var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
-                string name = TestContext.CurrentContext.Test.MethodName + ".png";
-                string screenshotFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, name);
-                screenshot.SaveAsFile(screenshotFile, ScreenshotImageFormat.Png);
-            }
-
             driver.Close();
         }
     }

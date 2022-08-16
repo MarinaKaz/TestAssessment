@@ -12,7 +12,12 @@ namespace AssessmentQA
     {
         private IWebDriver driver;
         private string path_to_file = Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
-        
+        By nlButton = By.XPath(".//div[text()='nl']");
+        By enButton = By.XPath(".//li[contains(text(),'English')]");
+        By acceptButton = By.XPath(".//div[text()='Accept all']");
+        By search = By.XPath("//input[@title='Search']");
+        By listLink = By.XPath("//a/h3/..");
+
         [SetUp]
         public void Setup()
         {
@@ -34,19 +39,19 @@ namespace AssessmentQA
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://www.google.com/");
             driver.Manage().Window.Maximize();
-            driver.FindElement(By.XPath(".//div[text()='nl']")).Click();
-            driver.FindElement(By.XPath(".//li[contains(text(),'English')]")).Click();
-            driver.FindElement(By.XPath(".//div[text()='Accept all']")).Click();
+            driver.FindElement(nlButton).Click();
+            driver.FindElement(enButton).Click();
+            driver.FindElement(acceptButton).Click();
         }
 
         [Test]
         public void CollectValidSearchLinksTest()
         {
-            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            IWebElement search_field = driver.FindElement(search);
             search_field.SendKeys("top it companies in netherlands");
             search_field.SendKeys(Keys.Return);
 
-            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            var list_links = driver.FindElements(listLink).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
             .Select(x => x.GetAttribute("href"))
             .ToList();
 
@@ -59,10 +64,10 @@ namespace AssessmentQA
         [Test]
         public void CheckInvalidSearchDataTest()
         {
-            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            IWebElement search_field = driver.FindElement(search);
             search_field.SendKeys("qwertyuiopasdffghjklweterrdfgdfdgfwfefwefwfsdvsv1234t345e");
             search_field.SendKeys(Keys.Return);
-            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            var list_links = driver.FindElements(listLink).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
             .Select(x => x.GetAttribute("href"))
             .ToList();
             string result = driver.FindElement(By.Id("res")).Text;
@@ -75,10 +80,10 @@ namespace AssessmentQA
         [Test]
         public void FailTestForVerifySaveScreenTest()
         {
-            IWebElement search_field = driver.FindElement(By.XPath(".//input[@title='Search']"));
+            IWebElement search_field = driver.FindElement(search);
             search_field.SendKeys("qwertyuiopasdffghjklweterrdfgdfdgfwfefwefwfsdvsv1234t345e");
             search_field.SendKeys(Keys.Return);
-            var list_links = driver.FindElements(By.XPath(".//a/h3/..")).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
+            var list_links = driver.FindElements(listLink).Where(x => !string.IsNullOrEmpty(x.GetAttribute("href")))
             .Select(x => x.GetAttribute("href"))
             .ToList();
             string result = driver.FindElement(By.Id("res")).Text;
@@ -96,8 +101,6 @@ namespace AssessmentQA
                 string screenshotFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, name);
                 screenshot.SaveAsFile(screenshotFile, ScreenshotImageFormat.Png);
             }
-            BaseTest screen = new BaseTest();
-            screen.GetSceen();
 
             driver.Close();
         }
