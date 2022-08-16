@@ -16,6 +16,5 @@ namespace AssessmentTests
             return reverse.ToString() == str;
 
         }
-
     }
 }

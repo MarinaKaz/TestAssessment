@@ -14,13 +14,18 @@ namespace AssessmentQA
         private IWebDriver driver;
         private string path_to_file =  Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
         By accept_button = By.XPath("//p[@class ='fc-button-label'][text()='Consent']");
+        By moreButton = By.Id("orbit-more-button");
+        By tvButton = By.XPath("//*[@id='orbit-more-drawer']//li[@class='orb-nav-tv']/a");
+        By listProgramm = By.XPath("//*[@id='morning']//span[@class='timezone--time']");
+        By listNameProgramm = By.XPath("//*[@id='morning']//li//a//span[contains(@class, 'programme__title')]//span");
+        By currentData = By.ClassName("date");
 
        [SetUp]
         public void Setup()
         {
             var data = new Dictionary<string, string>();
             foreach (var row in File.ReadAllLines(path_to_file))
-                data.Add(row.Split('=')[0], string.Join("=", row.Split('=').Skip(1).ToArray()));
+            data.Add(row.Split('=')[0], string.Join("=", row.Split('=').Skip(1).ToArray()));
             TestContext.Out.WriteLine("Start using " + data["brow"]);
 
             if ((data["brow"]).ToString() == "chrome")
@@ -36,24 +41,18 @@ namespace AssessmentQA
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://www.bbc.com/");
             driver.Manage().Window.Maximize();
-
-            //           driver.FindElement(By.XPath("//p[@class ='fc-button-label'][text()='Consent']")).Click();
-
             driver.FindElement(accept_button).Click();
         }
 
         [Test]
         public void BBCParsingTVProgramTest()
         {
-            driver.FindElement(By.Id("orbit-more-button")).Click();
-            driver.FindElement(By.XPath("//*[@id='orbit-more-drawer']//li[@class='orb-nav-tv']/a")).Click();
+            driver.FindElement(moreButton).Click();
+            driver.FindElement(tvButton).Click();
 
-            var list_time = driver.FindElements(By.XPath("//*[@id='morning']//span[@class='timezone--time']")).ToList();
-            var list_program_name = driver.FindElements(By.XPath("//*[@id='morning']//li//a//span[@class='programme__title delta']//span")).ToList();
-
-            //*[@id='morning']//li//a//span[contains(@class, 'programme__title')]//span
-            
-            string date = driver.FindElement(By.ClassName("date")).Text;
+            var list_time = driver.FindElements(listProgramm).ToList();
+            var list_program_name = driver.FindElements(listNameProgramm).ToList();
+            string date = driver.FindElement(currentData).Text;
 
             for (int i = 0; i < list_program_name.Count; i++)
             {
@@ -65,14 +64,6 @@ namespace AssessmentQA
         [TearDown]
         public void TearDown()
         {
-            if (TestContext.CurrentContext.Result.Outcome != ResultState.Success)
-            {
-                var screenshot = ((ITakesScreenshot)driver).GetScreenshot();
-                string name = TestContext.CurrentContext.Test.MethodName + ".png";
-                string screenshotFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, name);
-                screenshot.SaveAsFile(screenshotFile, ScreenshotImageFormat.Png);
-            }
-
             driver.Close();
         }
     }
