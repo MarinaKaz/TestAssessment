@@ -6,21 +6,15 @@ namespace AssessmentTests
 {
     class Palindrome
     {
-        public string isPalindrome(string str)
+        public bool isPalindrome(string str)
         {
             string reverse = "";
             for (int i = str.Length - 1; i >= 0; i--)
             {
                 reverse += str[i];
             }
-            if (reverse.ToString() == str)
-            {
-                return "True";
-            }
-            else
-            {
-                return "False";
-            }
+            return reverse.ToString() == str;
+
         }
 
     }
