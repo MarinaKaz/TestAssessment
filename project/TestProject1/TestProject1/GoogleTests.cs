@@ -11,14 +11,14 @@ namespace AssessmentQA
     public class GoogleTests
     {
         private IWebDriver driver;
-        private string path_to_file = "D:\\job\\1\\IsSoft\\TestAssessment\\project\\TestProject1\\TestProject1\\properties.txt";
-
+        private string path_to_file = Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
+        
         [SetUp]
         public void Setup()
         {
             var data = new Dictionary<string, string>();
             foreach (var row in File.ReadAllLines(path_to_file))
-            data.Add(row.Split('=')[0], string.Join("=", row.Split('=').Skip(1).ToArray()));
+                data.Add(row.Split('=')[0], string.Join("=", row.Split('=').Skip(1).ToArray()));
             TestContext.Out.WriteLine("Start using " + data["brow"]);
 
             if ((data["brow"]).ToString() == "chrome")
@@ -30,6 +30,7 @@ namespace AssessmentQA
             {
                 driver = new OpenQA.Selenium.Firefox.FirefoxDriver();
             }
+
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://www.google.com/");
             driver.Manage().Window.Maximize();
@@ -95,6 +96,8 @@ namespace AssessmentQA
                 string screenshotFile = Path.Combine(TestContext.CurrentContext.WorkDirectory, name);
                 screenshot.SaveAsFile(screenshotFile, ScreenshotImageFormat.Png);
             }
+            BaseTest screen = new BaseTest();
+            screen.GetSceen();
 
             driver.Close();
         }

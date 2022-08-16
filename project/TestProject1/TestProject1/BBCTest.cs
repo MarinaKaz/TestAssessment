@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using OpenQA.Selenium;
@@ -11,9 +12,10 @@ namespace AssessmentQA
     class BBCTest
     {
         private IWebDriver driver;
-        private string path_to_file = "D:\\job\\1\\IsSoft\\TestAssessment\\project\\TestProject1\\TestProject1\\properties.txt";
+        private string path_to_file =  Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
+        By accept_button = By.XPath("//p[@class ='fc-button-label'][text()='Consent']");
 
-        [SetUp]
+       [SetUp]
         public void Setup()
         {
             var data = new Dictionary<string, string>();
@@ -34,7 +36,10 @@ namespace AssessmentQA
             driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(3);
             driver.Navigate().GoToUrl("https://www.bbc.com/");
             driver.Manage().Window.Maximize();
-            driver.FindElement(By.XPath("//p[@class ='fc-button-label'][text()='Consent']")).Click();
+
+            //           driver.FindElement(By.XPath("//p[@class ='fc-button-label'][text()='Consent']")).Click();
+
+            driver.FindElement(accept_button).Click();
         }
 
         [Test]
@@ -45,12 +50,16 @@ namespace AssessmentQA
 
             var list_time = driver.FindElements(By.XPath("//*[@id='morning']//span[@class='timezone--time']")).ToList();
             var list_program_name = driver.FindElements(By.XPath("//*[@id='morning']//li//a//span[@class='programme__title delta']//span")).ToList();
+
+            //*[@id='morning']//li//a//span[contains(@class, 'programme__title')]//span
+            
             string date = driver.FindElement(By.ClassName("date")).Text;
 
             for (int i = 0; i < list_program_name.Count; i++)
             {
                 TestContext.Out.WriteLine(list_time[i].Text.Remove(5,12) + " : " + list_program_name[i].Text + " : " + date);
             }
+
         }
 
         [TearDown]

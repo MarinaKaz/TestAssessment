@@ -13,7 +13,7 @@ namespace AssessmentQA
     class ExampleTableTest
     {
         private IWebDriver driver;
-        private string path_to_file = "D:\\job\\1\\IsSoft\\TestAssessment\\project\\TestProject1\\TestProject1\\properties.txt";
+        private string path_to_file = Path.Combine(TestContext.CurrentContext.WorkDirectory, "properties.txt");
 
         [OneTimeSetUp]
         public void Setup()
